@@ -1,2 +1,2 @@
-# hw-1
-Homework 1 (due: Sun, Jan 29 2023 at 11:59pm) 
+# hw-2
+Homework 2 (due: Tue, Feb 14, 2023 @ 11:59pm) 
