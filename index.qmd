@@ -1,0 +1,325 @@
+---
+title: "Homework 2"
+author: "[Insert your name here]{style='background-color: yellow;'}"
+toc: true
+title-block-banner: true
+title-block-style: default
+format: html
+# format: pdf
+---
+
+[Link to the Github repository](https://github.com/psu-stat380/hw-2)
+
+---
+
+::: {.callout-important style="font-size: 0.8em;"}
+## Due: Tue, Feb 14, 2023 @ 11:59pm
+
+Please read the instructions carefully before submitting your assignment.
+
+1. This assignment requires you to only upload a `PDF` file on Canvas
+1. Don't collapse any code cells before submitting. 
+1. Remember to make sure all your code output is rendered properly before uploading your submission.
+
+⚠️ Please add your name to the author information in the frontmatter before submitting your assignment ⚠️
+:::
+
+For this assignment, we will be using the [Abalone dataset](http://archive.ics.uci.edu/ml/datasets/Abalone) from the UCI Machine Learning Repository. The dataset consists of physical measurements of abalone (a type of marine snail) and includes information on the age, sex, and size of the abalone.
+
+We will be using the following libraries:
+
+```{R}
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(purrr)
+library(cowplot)
+```
+
+
+<br><br><br><br>
+---
+
+## Question 1
+::: {.callout-tip}
+## 30 points
+EDA using `readr`, `tidyr` and `ggplot2`
+:::
+
+###### 1.1 (5 points)
+
+Load the "Abalone" dataset as a tibble called `abalone` using the URL provided below. The `abalone_col_names` variable contains a vector of the column names for this dataset (to be consistent with the R naming pattern). Make sure you read the dataset with the provided column names. 
+
+```R
+library(readr)
+url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
+
+abalone_col_names <- c(
+  "sex", 
+  "length", 
+  "diameter", 
+  "height", 
+  "whole_weight", 
+  "shucked_weight", 
+  "viscera_weight", 
+  "shell_weight", 
+  "rings"
+)
+
+abalone <- ... # Insert your code here
+```
+
+---
+
+###### 1.2 (5 points)
+
+Remove missing values and `NA`s from the dataset and store the cleaned data in a tibble called `df`. How many rows were dropped?
+
+```R
+df <- ... # Insert your code here
+```
+
+
+
+
+---
+
+##### 1.3 (5 points)
+
+Plot histograms of all the quantitative variables in a **single plot** [^footnote_facet_wrap]
+
+```R
+... # Insert your code here
+```
+
+
+---
+
+##### 1.4 (5 points)
+
+Create a boxplot of `length` for each `sex` and create a violin-plot of of `diameter` for each `sex`. Are there any notable differences in the physical appearences of abalones based on your analysis here?
+
+```R
+... # Insert your code for boxplot here
+```
+
+```R
+... # Insert your code for violinplot here
+```
+
+
+---
+
+###### 1.5  (5 points)
+
+Create a scatter plot of `length` and `diameter`, and modify the shape and color of the points based on the `sex` variable. Change the size of each point based on the `shell_wight` value for each observation. Are there any notable anomalies in the dataset?
+
+
+
+```R
+... # Insert your code here
+```
+
+---
+
+###### 1.6 (5 points)
+
+For each `sex`, create separate scatter plots of `length` and `diameter`. For each plot, also add a **linear** trendline to illustrate the relationship between the variables. Use the `facet_wrap()` function in R for this, and ensure that the plots are vertically stacked **not** horizontally. You should end up with a plot that looks like this: [^footnote_plot_facet]
+
+
+```R
+... # Insert your code here
+```
+
+
+
+
+
+<br><br><br><br>
+<br><br><br><br>
+---
+
+## Question 2
+::: {.callout-tip}
+## 40 points
+More advanced analyses using `dplyr`, `purrrr` and `ggplot2`
+:::
+
+
+---
+
+###### 2.1 (10 points)
+
+Filter the data to only include abalone with a length of at least $0.5$ meters. Group the data by `sex` and calculate the mean of each variable for each group. Create a bar plot to visualize the mean values for each variable by `sex`.
+
+
+```R
+df %>% ... # Insert your code here
+```
+
+
+---
+
+###### 2.2 (15 points)
+
+Implement the following in a **single command**:
+
+1. Temporarily create a new variable called `num_rings` which takes a value of:
+
+  * `"low"` if `rings < 10`
+  * `"high"` if `rings > 20`, and
+  * `"med"` otherwise
+
+2. Group `df` by this new variable and `sex` and compute `avg_weight` as the average of the `whole_weight + shucked_weight + viscera_weight + shell_weight` for each combination of `num_rings` and `sex`. 
+
+3. Use the `geom_tile()` function to create a tile plot of `num_rings` vs `sex` with the color indicating of each tile indicating the `avg_weight` value. 
+
+
+```R
+df %>% ... # Insert your code here
+```
+
+
+
+---
+
+###### 2.3 (5 points)
+
+Make a table of the pairwise correlations between all the numeric variables rounded to 2 decimal points. Your final answer should look like this [^footnote_table]
+
+
+```R
+df %>% ... # Insert your code here
+```
+
+
+
+---
+
+###### 2.4 (10 points)
+
+Use the `map2()` function from the `purrr` package to create a scatter plot for each _quantitative_ variable against the number of `rings` variable. Color the points based on the `sex` of each abalone. You can use the `cowplot::plot_grid()` function to finally make the following grid of plots.
+
+:::{.content-visible when-format="html"}
+![](images/plot_grid.png)
+:::
+
+
+```R
+... # Insert your code here
+```
+
+
+
+<br><br><br><br>
+<br><br><br><br>
+---
+
+## Question 3
+::: {.callout-tip}
+## 30 points
+
+Linear regression using `lm`
+:::
+
+---
+
+###### 3.1 (10 points)
+
+Perform a simple linear regression with `diameter` as the covariate and `height` as the response. Interpret the model coefficients and their significance values. 
+
+
+```R
+... # Insert your code here
+```
+
+
+
+---
+
+###### 3.2 (10 points)
+
+Make a scatterplot of `height` vs `diameter` and plot the regression line in `color="red"`. You can use the base `plot()` function in R for this. Is the linear model an appropriate fit for this relationship? Explain. 
+
+
+```R
+... # Insert your code here
+```
+
+
+
+---
+
+###### 3.3  (10 points)
+
+Suppose we have collected observations for "new" abalones with `new_diameter` values given below. What is the expected value of their `height` based on your model above? Plot these new observations along with your predictions in your plot from earlier using `color="violet"`
+
+```R
+
+new_diameters <- c(
+  0.15218946,
+  0.48361548,
+  0.58095513,
+  0.07603687,
+  0.50234599,
+  0.83462092,
+  0.95681938,
+  0.92906875,
+  0.94245437,
+  0.01209518
+)
+
+
+... # Insert your code here. 
+```
+
+
+
+
+
+:::{.hidden unless-format="pdf"}
+\pagebreak
+:::
+
+<br><br><br><br>
+<br><br><br><br>
+---
+
+
+# Appendix
+
+::: {.callout-note collapse="true"}
+## Session Information
+
+Print your `R` session information using the following command
+
+```{R}
+sessionInfo()
+```
+:::
+
+[^footnote_facet_wrap]:
+  You can use the `facet_wrap()` function for this. Have a look at its documentation using the help console in R
+
+[^footnote_plot_facet]:
+  Plot example for 1.6<br>
+  [![](images/lines.png){style="height: 5em;"}]{.content-visible when-format="html"}
+
+[^footnote_table]:
+  Table for 2.3<br>
+
+:::{.content-visible when-format="html"}
+
+| length| diameter| height| whole_weight| shucked_weight| viscera_weight| shell_weight| rings|
+|:--------------|------:|--------:|------:|------------:|--------------:|--------------:|------------:|-----:|
+|length         |   1.00|     0.99|   0.83|         0.93|           0.90|           0.90|         0.90|  0.56|
+|diameter       |   0.99|     1.00|   0.83|         0.93|           0.89|           0.90|         0.91|  0.57|
+|height         |   0.83|     0.83|   1.00|         0.82|           0.77|           0.80|         0.82|  0.56|
+|whole_weight   |   0.93|     0.93|   0.82|         1.00|           0.97|           0.97|         0.96|  0.54|
+|shucked_weight |   0.90|     0.89|   0.77|         0.97|           1.00|           0.93|         0.88|  0.42|
+|viscera_weight |   0.90|     0.90|   0.80|         0.97|           0.93|           1.00|         0.91|  0.50|
+|shell_weight   |   0.90|     0.91|   0.82|         0.96|           0.88|           0.91|         1.00|  0.63|
+|rings          |   0.56|     0.57|   0.56|         0.54|           0.42|           0.50|         0.63|  1.00|
+
+:::
