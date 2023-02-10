@@ -1,6 +1,6 @@
 ---
 title: "Homework 2"
-author: "[Insert your name here]{style='background-color: yellow;'}"
+author: "Brady Miller"
 toc: true
 title-block-banner: true
 title-block-style: default
@@ -28,7 +28,7 @@ For this assignment, we will be using the [Abalone dataset](http://archive.ics.u
 
 We will be using the following libraries:
 
-```R
+```{R}
 library(readr)
 library(tidyr)
 library(ggplot2)
@@ -51,7 +51,7 @@ EDA using `readr`, `tidyr` and `ggplot2`
 
 Load the "Abalone" dataset as a tibble called `abalone` using the URL provided below. The `abalone_col_names` variable contains a vector of the column names for this dataset (to be consistent with the R naming pattern). Make sure you read the dataset with the provided column names. 
 
-```R
+```{R}
 library(readr)
 url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
 
@@ -67,7 +67,12 @@ abalone_col_names <- c(
   "rings"
 )
 
-abalone <- ... # Insert your code here
+# reading in the url to create 'abalone' tibble
+abalone <- read.csv(url)
+
+# renaming columns in 'abalone' to col names provided
+colnames(abalone) = abalone_col_names
+
 ```
 
 ---
@@ -76,12 +81,14 @@ abalone <- ... # Insert your code here
 
 Remove missing values and `NA`s from the dataset and store the cleaned data in a tibble called `df`. How many rows were dropped?
 
-```R
-df <- ... # Insert your code here
+```{R}
+df <- abalone %>%
+  na.omit()
 ```
 
-
-
+No rows were dropped. The number of rows in 'df' is the same as 'abalone'. Also,
+per the website, the abalone has no missing data, so thus, no rows should have 
+been dropped.
 
 ---
 
@@ -89,8 +96,10 @@ df <- ... # Insert your code here
 
 Plot histograms of all the quantitative variables in a **single plot** [^footnote_facet_wrap]
 
-```R
-... # Insert your code here
+```{R}
+df %>%
+  ggplot()+
+  geom_bar(aes(x = sex))
 ```
 
 
@@ -100,14 +109,27 @@ Plot histograms of all the quantitative variables in a **single plot** [^footnot
 
 Create a boxplot of `length` for each `sex` and create a violin-plot of of `diameter` for each `sex`. Are there any notable differences in the physical appearences of abalones based on your analysis here?
 
-```R
-... # Insert your code for boxplot here
+```{R}
+df %>%
+  ggplot() + 
+  geom_boxplot(aes(x = length, y = sex))
 ```
 
-```R
-... # Insert your code for violinplot here
+```{R}
+?geom_violin()
+df %>%
+  ggplot() + 
+  geom_violin(aes(x = diameter, y = sex)) 
 ```
-
+Based on the boxplot and violin plot, the male and female abalones are very 
+similar in physical appearance as their distributions for length and diameter 
+were nearly identical. They had both had an average of about 0.6 mm for their 
+length and had the greatest density in diameter at about 0.49 mm. However, the
+miniumum and outlier lengths and diameters of the female abalones were much 
+smaller than that of the male abalones. For the infant abalones, as expected, 
+their lengths and diameters are much smaller than the males and females. I was
+surprised with how close the maximum length for the infant abalones was to the 
+maximum lengths.
 
 ---
 
@@ -117,10 +139,17 @@ Create a scatter plot of `length` and `diameter`, and modify the shape and color
 
 
 
-```R
-... # Insert your code here
+```{R}
+df %>%
+  ggplot() + 
+  geom_point(aes(x = length, y = diameter, shape = sex, color = sex, size = shell_weight))
 ```
-
+There is one very noticeable anomaly in the data set. This occurs with an infant 
+abalone, in which its diameter is nearly two times its length, which is very 
+abnormal. Typically, infant abalones with a length of about 0.2 mm, have a 
+diameter of about 0.15 mm and a shell_weight that's very small, in this case we 
+will say 0.1 g. For this anomaly, it has a length of about 0.2 mm, a diameter of 
+about 0.38 mm and shell weight around 0.25 g.
 ---
 
 ###### 1.6 (5 points)
@@ -128,12 +157,13 @@ Create a scatter plot of `length` and `diameter`, and modify the shape and color
 For each `sex`, create separate scatter plots of `length` and `diameter`. For each plot, also add a **linear** trendline to illustrate the relationship between the variables. Use the `facet_wrap()` function in R for this, and ensure that the plots are vertically stacked **not** horizontally. You should end up with a plot that looks like this: [^footnote_plot_facet]
 
 
-```R
-... # Insert your code here
+```{R}
+df %>%
+  ggplot() + 
+  geom_point(aes(x = length, y = diameter, color = sex)) +
+  geom_smooth(aes(x = length, y = diameter), method = lm, color = 'black') +
+  facet_wrap(~sex, nrow = 3)
 ```
-
-
-
 
 
 <br><br><br><br>
