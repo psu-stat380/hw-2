@@ -185,7 +185,10 @@ Filter the data to only include abalone with a length of at least $0.5$ meters. 
 
 
 ```R
-df %>% ... # Insert your code here
+df2 <- df %>% 
+  filter(length >= 0.5) %>%
+  group_by(sex) %>%
+  summarize(averages 
 ```
 
 
@@ -260,10 +263,11 @@ Linear regression using `lm`
 Perform a simple linear regression with `diameter` as the covariate and `height` as the response. Interpret the model coefficients and their significance values. 
 
 
-```R
-... # Insert your code here
+```{R}
+model <- lm(height ~ diameter, df)
+summary(model)
 ```
-
+The intercept coefficient is -0.003784. This means that a 'hypothetical' abalone with diameter of 0 mm will have a length of -0.00378 mm. Obviously this isn't possible, but it shows that the intercept of the regression line is -0.003784 mm. The diameter coefficient is the slope and is equal to 0.351346, which means that for every increase in diameter by 1 mm, then the length will increase by 0.351346 mm. The significance value for the intercept ($\beta_0$) is somewhat high at 0.0124, so that $p$-value has some significant. The diameter $p$-value is very small, indicating that it is very significant. This tells us to accept the alternate hypothesis against the null hypothesis, meaning that diameter is a good predictor of length. 
 
 
 ---
@@ -273,8 +277,13 @@ Perform a simple linear regression with `diameter` as the covariate and `height`
 Make a scatterplot of `height` vs `diameter` and plot the regression line in `color="red"`. You can use the base `plot()` function in R for this. Is the linear model an appropriate fit for this relationship? Explain. 
 
 
-```R
-... # Insert your code here
+```{R}
+x <- df$height
+y <- df$diameter
+
+plot(x, y, xlab = 'height', ylab = 'diameter')
+lines(x, fitted(lm(y ~x), col = 'red'))
+
 ```
 
 
