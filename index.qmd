@@ -265,8 +265,20 @@ like this [^3]
 
 [^3]: Table for 2.3<br>
 
-``` r
-df %>% ... # Insert your code here
+``` {r}
+library(corrplot)
+
+# selecting all columns in table except for the sex column
+df2 <- df %>% 
+  select(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)
+
+# getting all the correlation values for each pair of quantitative variables & displaying that table
+data.cor <- round(cor(df2),2)
+data.cor
+
+# creating a shaded plot that shows the correlation between each quantitative variable
+corrplot(data.cor, method = 'shade', is.corr = FALSE, col.lim = c(0,1), title = 'Pairwise Correlation Table of Quantitative Variables')
+
 ```
 
 ------------------------------------------------------------------------
