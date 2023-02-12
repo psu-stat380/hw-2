@@ -190,6 +190,14 @@ df2 <-
 
 df2
 ```
+```{r}
+df2 %>%
+  select(meanlength, meandiameter, meanheight, meanwhole_weight, meanshucked_weight, meanviscera_weight, meanshell_weight, meanrings) %>%
+  gather() %>%
+  ggplot(aes(x=value)) +
+  facet_wrap(~key, scales = "free") +
+  geom_bar()
+```
 DO THIS UGTNEJWKTHT2EGJLW KH2BTJLWK 
 
 ---
@@ -252,9 +260,20 @@ Use the `map2()` function from the `purrr` package to create a scatter plot for 
 
 
 ```{r}
-map2(rings, length, sex)
-```
+variables <- c("length", "diameter", "height", "whole_weight", "shucked_weight", "viscera_weight", "shell_weight", "rings")
 
+plots <- map2(.x = "rings", .y = variables,
+              .f = ~ ggplot(data = df, aes(x = .x, y = .y, color = sex)) +
+                geom_point() +
+                ggtitle(paste0(.y, " vs Rings")) +
+                    xlab("Rings") +
+                    ylab(.y))
+              
+
+# Create the plot grid
+cowplot::plot_grid(plotlist = plots, ncol = 3)
+```
+DO THIS THWUIGKRQBIAJKLSHIOGRW;l
 
 
 <br><br><br><br>
@@ -280,7 +299,11 @@ model <- lm(height ~ diameter, data = df)
 summary(model)
 ```
 
-DO THIS YHNTRBDGVSRTJREKYR
+The y-intercept, $\beta_0$ - The mean height of a hypothetical abalone is -.0037 mm when the diameter is 0 mm
+
+The slope, $\beta_1$ - For each additional mm in diameter, we expect the height of an abalone to increase by .3513 mm
+
+Since REGYHAKJSB,M DO THIS HUGWIRLQJD,M
 
 ---
 
@@ -294,7 +317,7 @@ plot(df$diameter, df$height)
 abline(model, col="red")
 ```
 
-DO THIS GJWRE NA,MQHERBJLK
+Yes a linear model seems appropriate. The regression line follows the trend of the data really well and there is no curvature to the points in the plot
 
 ---
 
@@ -325,8 +348,6 @@ plot(df$diameter, df$height)
 abline(model, col="red")
 points(new_diameters, predicted_height, col = "violet")
 ```
-DO THIS HTEGIJNLSKGWEJLNRKS
-
 
 
 
