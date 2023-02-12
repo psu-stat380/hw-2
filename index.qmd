@@ -135,7 +135,6 @@ df %>%
 ```
 
 ```{R}
-?geom_violin()
 df %>%
   ggplot() + 
   geom_violin(aes(x = diameter, y = sex)) 
@@ -296,6 +295,13 @@ grid of plots.
 :::
 
 ``` r
+dfrings <- df %>%
+  select(rings)
+
+df3 <- df %>%
+  select(length, height, diameter, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)
+
+cowplot::plot_grid(map2(dfrings, df3, df3 ~ dfrings))
 
 ```
 
@@ -369,7 +375,7 @@ Suppose we have collected observations for "new" abalones with
 `height` based on your model above? Plot these new observations along
 with your predictions in your plot from earlier using `color="violet"`
 
-``` r
+```r
 new_diameters <- c(
   0.15218946,
   0.48361548,
@@ -383,12 +389,13 @@ new_diameters <- c(
   0.01209518
 )
 new_diameters <- data.frame(new_diameters)
-new_height <- predict(model, newdata = new_diameters)
+typeof(new_diameters)
+new_height <- predict(lm(new_height ~ new_diameters),newdata = new_diameters)
+new_height
 
 plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey')
 lines(x, fitted(lm(y~x), color = 'red'))
-points(new_diameters %>% unlist(), new_height, col = 'violet')
-
+points(new_diameters, new_height, col = 'violet')
 ```
 
 ::: {.hidden unless-format="pdf"}
