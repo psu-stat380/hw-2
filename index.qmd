@@ -213,8 +213,8 @@ meters. Group the data by `sex` and calculate the mean of each variable
 for each group. Create a bar plot to visualize the mean values for each
 variable by `sex`.
 
-``` {r}
-df %>%
+``` r
+df2 <- df %>%
   filter(length >= 0.5) %>%
   group_by(sex) %>%
   summarise(mean_length = mean(length),
@@ -223,9 +223,23 @@ df %>%
             mean_whole_weight = mean(whole_weight),
             mean_shucked_weight = mean(shucked_weight),
             mean_viscera_weight = mean(viscera_weight),
-            mean_rings = mean(rings)) %>%
-  ggplot() + 
-  geom_bar(aes(x = sex, y = mean_length), stat = 'identity')
+            mean_shell_weight = mean(shell_weight),
+            mean_rings = mean(rings)) 
+  par(mfrow = c(3,3)) %>%
+  plot(sex, mean_length) %>%
+  plot(sex, mean_diameter) %>%
+  plot(sex, mean_height) %>% 
+  plot(sex, mean_whole_weight) %>% 
+  plot(sex, mean_shucked_weight) %>% 
+  plot(sex, mean_viscera_weight) %>%
+  plot(sex, mean_shell_weight) %>%
+  plot(sex, mean_rings)
+
+par(mfrow = c(3,3))
+plot(df2$sex, df2$mean_length)
+?plot()
+
+df2$sex
 ```
 
 ------------------------------------------------------------------------
@@ -383,7 +397,7 @@ Suppose we have collected observations for "new" abalones with
 `height` based on your model above? Plot these new observations along
 with your predictions in your plot from earlier using `color="violet"`
 
-```r
+```{r}
 new_diameters <- c(
   0.15218946,
   0.48361548,
@@ -396,13 +410,19 @@ new_diameters <- c(
   0.94245437,
   0.01209518
 )
-new_diameters <- data.frame(new_diameters)
-new_height <- predict(model, newdata = new_diameters)
+
+new_x <- data.frame(x = new_diameters)
+
+new_height <- predict(model, new_x)
+
 new_height
 
-plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey')
-lines(x, fitted(lm(y~x), color = 'red'))
-points(new_diameters, new_height, col = 'violet')
+
+plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey', xlim = c(0,1))
+lines(x, fitted(lm(y~x), color = 'red'), xlim = c(0,1))
+points(new_diameters %>% unlist(), new_height, col = 'violet', pch = 19)
+
+?plot()
 ```
 
 ::: {.hidden unless-format="pdf"}
