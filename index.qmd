@@ -116,8 +116,12 @@ Plot histograms of all the quantitative variables in a **single plot**
 
 ```{R}
 df %>%
-  ggplot()+
-  geom_bar(aes(x = sex))
+  select(!sex) %>%
+  gather(cols, value) %>%
+  ggplot() +
+  geom_histogram(aes(value)) +
+  facet_wrap(~ cols, scales = 'free')
+
 ```
 
 ------------------------------------------------------------------------
@@ -213,7 +217,7 @@ meters. Group the data by `sex` and calculate the mean of each variable
 for each group. Create a bar plot to visualize the mean values for each
 variable by `sex`.
 
-``` r
+``` {r}
 df2 <- df %>%
   filter(length >= 0.5) %>%
   group_by(sex) %>%
@@ -224,22 +228,16 @@ df2 <- df %>%
             mean_shucked_weight = mean(shucked_weight),
             mean_viscera_weight = mean(viscera_weight),
             mean_shell_weight = mean(shell_weight),
-            mean_rings = mean(rings)) 
-  par(mfrow = c(3,3)) %>%
-  plot(sex, mean_length) %>%
-  plot(sex, mean_diameter) %>%
-  plot(sex, mean_height) %>% 
-  plot(sex, mean_whole_weight) %>% 
-  plot(sex, mean_shucked_weight) %>% 
-  plot(sex, mean_viscera_weight) %>%
-  plot(sex, mean_shell_weight) %>%
-  plot(sex, mean_rings)
+            mean_rings = mean(rings)) %>%
+    pivot_longer(!sex, 
+                 names_to = 'Vars',
+                 values_to = 'Means')
 
-par(mfrow = c(3,3))
-plot(df2$sex, df2$mean_length)
-?plot()
-
-df2$sex
+df2 %>%
+  ggplot() +
+  geom_bar(aes(x = Means, y = Vars, fill = sex), stat = 'identity') + 
+  facet_wrap(vars(sex), dir = 'v')
+    
 ```
 
 ------------------------------------------------------------------------
@@ -287,7 +285,7 @@ like this [^3]
 [^3]: Table for 2.3<br>
 
 ``` {r}
-library(corrplot)
+#library(corrplot)
 
 # selecting all columns in table except for the sex column
 df2 <- df %>% 
@@ -298,8 +296,7 @@ data.cor <- round(cor(df2),2)
 data.cor
 
 # creating a shaded plot that shows the correlation between each quantitative variable
-corrplot(data.cor, method = 'shade', is.corr = FALSE, col.lim = c(0,1), title = 'Pairwise Correlation Table of Quantitative Variables')
-
+# corrplot(data.cor, method = 'shade', is.corr = FALSE, col.lim = c(0,1), title = 'Pairwise Correlation Table of Quantitative Variables')
 ```
 
 ------------------------------------------------------------------------
@@ -316,14 +313,18 @@ grid of plots.
 ![](images/plot_grid.png)
 :::
 
-``` r
+``` {r}
 dfrings <- df %>%
   select(rings)
 
-df3 <- df %>%
-  select(length, height, diameter, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)
+dfquant <- df %>%
+  select(!sex)
 
-cowplot::plot_grid(map2(dfrings, df3, df3 ~ dfrings))
+plot <- map2(dfquant, dfrings, ~ggplot(df) + geom_point(aes(x = rings, y=.x, color=sex))+ ylab(.x))
+
+
+plot
+cowplot::plot_grid(plotlist = plot, labels = colnames(dfquant), ncol = 3)
 
 ```
 
@@ -415,14 +416,10 @@ new_x <- data.frame(x = new_diameters)
 
 new_height <- predict(model, new_x)
 
-new_height
-
 
 plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey', xlim = c(0,1))
 lines(x, fitted(lm(y~x), color = 'red'), xlim = c(0,1))
 points(new_diameters %>% unlist(), new_height, col = 'violet', pch = 19)
-
-?plot()
 ```
 
 ::: {.hidden unless-format="pdf"}
