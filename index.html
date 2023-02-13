@@ -331,10 +331,23 @@ Attaching package: 'dplyr'</code></pre>
 <section id="points-8" class="level6">
 <h6 class="anchored" data-anchor-id="points-8">2.1 (10 points)</h6>
 <p>Filter the data to only include abalone with a length of at least <span class="math inline">\(0.5\)</span> meters. Group the data by <code>sex</code> and calculate the mean of each variable for each group. Create a bar plot to visualize the mean values for each variable by <code>sex</code>.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df <span class="sc">%&gt;%</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(length <span class="sc">&gt;=</span> <span class="fl">0.5</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex) <span class="sc">%&gt;%</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(averages </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_length =</span> <span class="fu">mean</span>(length),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_diameter =</span> <span class="fu">mean</span>(diameter),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_height =</span> <span class="fu">mean</span>(height),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_whole_weight =</span> <span class="fu">mean</span>(whole_weight),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_shucked_weight =</span> <span class="fu">mean</span>(shucked_weight),</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_viscera_weight =</span> <span class="fu">mean</span>(viscera_weight),</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean_rings =</span> <span class="fu">mean</span>(rings)) <span class="sc">%&gt;%</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="fu">aes</span>(<span class="at">x =</span> sex, <span class="at">y =</span> mean_length), <span class="at">stat =</span> <span class="st">'identity'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 <hr>
 </section>
 <section id="points-9" class="level6">
@@ -367,7 +380,7 @@ Attaching package: 'dplyr'</code></pre>
 `.groups` argument.</code></pre>
 </div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <hr>
@@ -410,7 +423,7 @@ rings                    0.50         0.63  1.00</code></pre>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># creating a shaded plot that shows the correlation between each quantitative variable</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">corrplot</span>(data.cor, <span class="at">method =</span> <span class="st">'shade'</span>, <span class="at">is.corr =</span> <span class="cn">FALSE</span>, <span class="at">col.lim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">title =</span> <span class="st">'Pairwise Correlation Table of Quantitative Variables'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <hr>
@@ -490,7 +503,7 @@ F-statistic:  9514 on 1 and 4174 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">xlab =</span> <span class="st">'diameter'</span>, <span class="at">ylab =</span> <span class="st">'height'</span>, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">main =</span> <span class="st">'Abalone ring diameter vs height'</span>, <span class="at">col =</span> <span class="st">'grey'</span>)</span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">fitted</span>(<span class="fu">lm</span>(y <span class="sc">~</span>x), <span class="at">color =</span> <span class="st">'red'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>This linear model seems to be an pretty appropriate fit for this relationship. The regression line does a good job reducing potential error from the points by passing through the middle section of the chunks of points. There are few outliers in the data set that may impact the <span class="math inline">\(R^2\)</span> value because of how far from the regression line they are. Despite this, the linear model is an appropriate representation and predictor of the data for this relationship. ————————————————————————</p>
@@ -511,13 +524,12 @@ F-statistic:  9514 on 1 and 4174 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fl">0.01209518</span></span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>new_diameters <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(new_diameters)</span>
-<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a><span class="fu">typeof</span>(new_diameters)</span>
-<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>new_height <span class="ot">&lt;-</span> <span class="fu">predict</span>(<span class="fu">lm</span>(new_height <span class="sc">~</span> new_diameters),<span class="at">newdata =</span> new_diameters)</span>
-<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>new_height</span>
-<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">xlab =</span> <span class="st">'diameter'</span>, <span class="at">ylab =</span> <span class="st">'height'</span>, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">main =</span> <span class="st">'Abalone ring diameter vs height'</span>, <span class="at">col =</span> <span class="st">'grey'</span>)</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">fitted</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x), <span class="at">color =</span> <span class="st">'red'</span>))</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(new_diameters, new_height, <span class="at">col =</span> <span class="st">'violet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>new_height <span class="ot">&lt;-</span> <span class="fu">predict</span>(model, <span class="at">newdata =</span> new_diameters)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>new_height</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">xlab =</span> <span class="st">'diameter'</span>, <span class="at">ylab =</span> <span class="st">'height'</span>, <span class="at">pch=</span><span class="dv">20</span>, <span class="at">main =</span> <span class="st">'Abalone ring diameter vs height'</span>, <span class="at">col =</span> <span class="st">'grey'</span>)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">fitted</span>(<span class="fu">lm</span>(y<span class="sc">~</span>x), <span class="at">color =</span> <span class="st">'red'</span>))</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(new_diameters, new_height, <span class="at">col =</span> <span class="st">'violet'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="hidden" data-unless-format="pdf">
 <div style="page-break-after: always;"></div>
 </div>

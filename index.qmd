@@ -213,11 +213,19 @@ meters. Group the data by `sex` and calculate the mean of each variable
 for each group. Create a bar plot to visualize the mean values for each
 variable by `sex`.
 
-``` r
-df2 <- df %>% 
+``` {r}
+df %>%
   filter(length >= 0.5) %>%
   group_by(sex) %>%
-  summarize(averages 
+  summarise(mean_length = mean(length),
+            mean_diameter = mean(diameter),
+            mean_height = mean(height),
+            mean_whole_weight = mean(whole_weight),
+            mean_shucked_weight = mean(shucked_weight),
+            mean_viscera_weight = mean(viscera_weight),
+            mean_rings = mean(rings)) %>%
+  ggplot() + 
+  geom_bar(aes(x = sex, y = mean_length), stat = 'identity')
 ```
 
 ------------------------------------------------------------------------
@@ -389,8 +397,7 @@ new_diameters <- c(
   0.01209518
 )
 new_diameters <- data.frame(new_diameters)
-typeof(new_diameters)
-new_height <- predict(lm(new_height ~ new_diameters),newdata = new_diameters)
+new_height <- predict(model, newdata = new_diameters)
 new_height
 
 plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey')
