@@ -260,21 +260,16 @@ Use the `map2()` function from the `purrr` package to create a scatter plot for 
 
 
 ```{r}
-variables <- c("length", "diameter", "height", "whole_weight", "shucked_weight", "viscera_weight", "shell_weight", "rings")
+quant <- 
+  abalone %>%
+  select(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings) %>%
+  map2(., names(.), ~ ggplot(abalone, aes(x = rings, y = ., color = sex)) + 
+          geom_point() + 
+          ggtitle(.y) +
+          xlab("Rings"))
 
-plots <- map2(.x = "rings", .y = variables,
-              .f = ~ ggplot(data = df, aes(x = .x, y = .y, color = sex)) +
-                geom_point() +
-                ggtitle(paste0(.y, " vs Rings")) +
-                    xlab("Rings") +
-                    ylab(.y))
-              
-
-# Create the plot grid
-cowplot::plot_grid(plotlist = plots, ncol = 3)
+cowplot::plot_grid(plotlist = quant, ncol = 3)
 ```
-DO THIS THWUIGKRQBIAJKLSHIOGRW;l
-
 
 <br><br><br><br>
 <br><br><br><br>
