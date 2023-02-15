@@ -28,7 +28,7 @@ For this assignment, we will be using the [Abalone dataset](http://archive.ics.u
 
 We will be using the following libraries:
 
-```{r}
+```{r, message =FALSE}
 rm(list = ls())
 library(readr)
 library(tidyr)
@@ -154,8 +154,6 @@ ggplot(data = df, mapping = aes(x=length, y=diameter)) +
 
 
 
-
-
 <br><br><br><br>
 <br><br><br><br>
 ---
@@ -173,32 +171,28 @@ More advanced analyses using `dplyr`, `purrrr` and `ggplot2`
 
 Filter the data to only include abalone with a length of at least $0.5$ meters. Group the data by `sex` and calculate the mean of each variable for each group. Create a bar plot to visualize the mean values for each variable by `sex`.
 
-
 ```{r}
-df2 <-
+df4 <-
   df %>%
   filter(length >= .5) %>%
   group_by(sex) %>%
   summarize(meanlength = mean(length),
             meandiameter = mean(diameter),
-            meanheight = mean(diameter),
+            meanheight = mean(height),
             meanwhole_weight = mean(whole_weight),
             meanshucked_weight = mean(shucked_weight),
             meanviscera_weight = mean(viscera_weight),
             meanshell_weight = mean(shell_weight),
-            meanrings = mean(rings))
+            meanrings = mean(rings)) %>%
+  pivot_longer(!sex,
+               values_to = "Mean",
+               names_to = "Variable") 
 
-df2
+ggplot(data=df4, aes(x=Mean, y=Variable)) +
+  geom_bar(stat="identity", aes(fill=sex)) +
+  facet_wrap(vars(sex), dir="v") 
 ```
-```{r}
-df2 %>%
-  select(meanlength, meandiameter, meanheight, meanwhole_weight, meanshucked_weight, meanviscera_weight, meanshell_weight, meanrings) %>%
-  gather() %>%
-  ggplot(aes(x=value)) +
-  facet_wrap(~key, scales = "free") +
-  geom_bar()
-```
-DO THIS UGTNEJWKTHT2EGJLW KH2BTJLWK 
+
 
 ---
 
@@ -298,7 +292,9 @@ The y-intercept, $\beta_0$ - The mean height of a hypothetical abalone is -.0037
 
 The slope, $\beta_1$ - For each additional mm in diameter, we expect the height of an abalone to increase by .3513 mm
 
-Since REGYHAKJSB,M DO THIS HUGWIRLQJD,M
+Since the p-value for the intercept is below the level of significance, this suggests that the intercept term is statistically different than zero
+
+Since the p-value of diameter is below the level of significance, this suggests that diameter is a useful predictor when predicting height since the slope is statistically different than zero
 
 ---
 
