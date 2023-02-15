@@ -1,11 +1,11 @@
 ---
 title: "Homework 2"
-author: "[Insert your name here]{style='background-color: yellow;'}"
+author: "[Danny Dawson]{style='background-color: yellow;'}"
 toc: true
 title-block-banner: true
 title-block-style: default
-format: html
-# format: pdf
+#format: html
+format: pdf
 ---
 
 [Link to the Github repository](https://github.com/psu-stat380/hw-2)
@@ -28,7 +28,7 @@ For this assignment, we will be using the [Abalone dataset](http://archive.ics.u
 
 We will be using the following libraries:
 
-```R
+```{r}
 library(readr)
 library(tidyr)
 library(ggplot2)
@@ -51,7 +51,7 @@ EDA using `readr`, `tidyr` and `ggplot2`
 
 Load the "Abalone" dataset as a tibble called `abalone` using the URL provided below. The `abalone_col_names` variable contains a vector of the column names for this dataset (to be consistent with the R naming pattern). Make sure you read the dataset with the provided column names. 
 
-```R
+```{r}
 library(readr)
 url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
 
@@ -67,7 +67,7 @@ abalone_col_names <- c(
   "rings"
 )
 
-abalone <- ... # Insert your code here
+abalone <- read_csv(url, col_names = abalone_col_names)
 ```
 
 ---
@@ -76,11 +76,11 @@ abalone <- ... # Insert your code here
 
 Remove missing values and `NA`s from the dataset and store the cleaned data in a tibble called `df`. How many rows were dropped?
 
-```R
-df <- ... # Insert your code here
+```{r}
+df <- abalone %>% na.omit()
 ```
 
-
+No rows were dropped
 
 
 ---
@@ -89,8 +89,15 @@ df <- ... # Insert your code here
 
 Plot histograms of all the quantitative variables in a **single plot** [^footnote_facet_wrap]
 
-```R
-... # Insert your code here
+```{r}
+df %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram()
+
+#need to use pivot_longer or gather
 ```
 
 
@@ -98,16 +105,30 @@ Plot histograms of all the quantitative variables in a **single plot** [^footnot
 
 ##### 1.4 (5 points)
 
-Create a boxplot of `length` for each `sex` and create a violin-plot of of `diameter` for each `sex`. Are there any notable differences in the physical appearences of abalones based on your analysis here?
+Create a boxplot of `length` for each `sex` and create a violin-plot of of `diameter` for each `sex`. Are there any notable differences in the physical appearances of abalones based on your analysis here?
 
-```R
-... # Insert your code for boxplot here
+```{r}
+abalone_boxplot <- 
+  df %>%
+  ggplot(aes(length)) +
+  geom_boxplot() +
+  facet_wrap(~ sex)
+
+abalone_boxplot
 ```
 
-```R
-... # Insert your code for violinplot here
+```{R}
+abalone_violinplot <- 
+  df %>%
+  ggplot(aes(sex, diameter)) +
+  geom_violin() +
+  ggtitle("Violinplot of Sex vs Diameter")
+
+abalone_violinplot
 ```
 
+
+Female and Male abalones have about the same amount of variation in size. The intersex abalones have a little bit less variation, and are smaller than both the male and female abalones on average. 
 
 ---
 
@@ -117,9 +138,16 @@ Create a scatter plot of `length` and `diameter`, and modify the shape and color
 
 
 
-```R
-... # Insert your code here
+```{R}
+abalone_scatterplot <-
+  df %>%
+  ggplot(aes(length, diameter, color = sex, shape = sex, size = shell_weight)) +
+  geom_point()
+
+abalone_scatterplot
 ```
+
+There is a intersex anomaly in the scatterplot, with a green triangle completely displaced from the rest of the abalones. There is a male abalone that is somewhat an anomaly, but it is still pretty close to the trendline of sizes. 
 
 ---
 
@@ -128,11 +156,16 @@ Create a scatter plot of `length` and `diameter`, and modify the shape and color
 For each `sex`, create separate scatter plots of `length` and `diameter`. For each plot, also add a **linear** trendline to illustrate the relationship between the variables. Use the `facet_wrap()` function in R for this, and ensure that the plots are vertically stacked **not** horizontally. You should end up with a plot that looks like this: [^footnote_plot_facet]
 
 
-```R
-... # Insert your code here
+```{R}
+abalone_scatterplot2 <-
+  df %>%
+  ggplot(aes(length, diameter)) +
+  geom_point(aes(color = sex)) +
+  geom_smooth() +
+  facet_wrap(~ sex, ncol = 1) #ncol = 1 stacks the plots vertically 
+
+abalone_scatterplot2 
 ```
-
-
 
 
 
@@ -154,8 +187,13 @@ More advanced analyses using `dplyr`, `purrrr` and `ggplot2`
 Filter the data to only include abalone with a length of at least $0.5$ meters. Group the data by `sex` and calculate the mean of each variable for each group. Create a bar plot to visualize the mean values for each variable by `sex`.
 
 
-```R
-df %>% ... # Insert your code here
+```{R}
+df %>% 
+  filter(length >= 0.5) %>%
+  group_by(sex) %>%
+  summarise(avg = mean(length)) %>%
+  ggplot() +
+  geom_col(aes(sex, avg, width = 0.5, fill = sex))
 ```
 
 
@@ -176,8 +214,19 @@ Implement the following in a **single command**:
 3. Use the `geom_tile()` function to create a tile plot of `num_rings` vs `sex` with the color indicating of each tile indicating the `avg_weight` value. 
 
 
-```R
-df %>% ... # Insert your code here
+```{R}
+df %>%
+  mutate(num_rings = case_when(rings < 10 ~ 'low',
+                               rings > 20 ~ 'high',
+                               rings > 10 | rings < 20 ~ 'med')) %>%
+  group_by(sex, num_rings) %>%
+  summarise(avg_weight = mean(whole_weight + shucked_weight + viscera_weight + shell_weight))%>%
+  ggplot(aes(num_rings, sex)) +
+  geom_tile(aes(fill = avg_weight)) + 
+  ggtitle("Tile Plot of Number of Rings and Sex") +
+  xlab("Number of Rings") +
+  ylab("Sex")
+  
 ```
 
 
@@ -189,8 +238,11 @@ df %>% ... # Insert your code here
 Make a table of the pairwise correlations between all the numeric variables rounded to 2 decimal points. Your final answer should look like this [^footnote_table]
 
 
-```R
-df %>% ... # Insert your code here
+```{r}
+df2 <- df %>% select(-sex) 
+res <- cor(df2)
+res <- round(res, 2)
+res
 ```
 
 
@@ -206,8 +258,27 @@ Use the `map2()` function from the `purrr` package to create a scatter plot for 
 :::
 
 
-```R
-... # Insert your code here
+```{R}
+#not sure how to use map2() to answer this question, below was my thought process. 
+
+
+#map2 needs to connect the quantitative column and rings
+#df['i'] can give back all of the values of a column I need
+#need to loop through all of the columns in my map2 function 
+#and map it to rings each time. 
+#df['sex']
+#df_numeric <- df %>% select(-sex)
+#df_numeric
+#cols <- c(colnames(df_numeric))
+#cols
+#now have all of the column names
+#can loop through each column in mapping statement
+#map2(
+  
+ # df$rings, 
+  #plot(df$i,y)
+#)
+
 ```
 
 
@@ -230,10 +301,19 @@ Linear regression using `lm`
 Perform a simple linear regression with `diameter` as the covariate and `height` as the response. Interpret the model coefficients and their significance values. 
 
 
-```R
-... # Insert your code here
+```{R}
+x <- df$diameter
+y <- df$height
+model <- lm(y ~ x)
+summary(model)
 ```
 
+The regression coefficients are as follows. 
+
+b0 = -0.003803
+b1 = 0.351376
+
+The x-value (diameter) has a p-value of 2e-16. At basically any significance level, this will prove to be a statistically significant statistic. Thus, abalone diameter is a statistically significant predictor of abalone height. 
 
 
 ---
@@ -243,11 +323,14 @@ Perform a simple linear regression with `diameter` as the covariate and `height`
 Make a scatterplot of `height` vs `diameter` and plot the regression line in `color="red"`. You can use the base `plot()` function in R for this. Is the linear model an appropriate fit for this relationship? Explain. 
 
 
-```R
-... # Insert your code here
+```{R}
+x <- df$diameter
+y <- df$height
+plot(x, y, main = 'Height vs Diameter', xlab = 'diameter', ylab = 'height')
+abline(lm(y ~ x), col = "red")
 ```
 
-
+The linear model is an appropriate model for this data. Most of the data points lie near the line of best fit, and there are really only two outliers in the scatterplot. 
 
 ---
 
@@ -255,7 +338,7 @@ Make a scatterplot of `height` vs `diameter` and plot the regression line in `co
 
 Suppose we have collected observations for "new" abalones with `new_diameter` values given below. What is the expected value of their `height` based on your model above? Plot these new observations along with your predictions in your plot from earlier using `color="violet"`
 
-```R
+```{R}
 
 new_diameters <- c(
   0.15218946,
@@ -270,12 +353,35 @@ new_diameters <- c(
   0.01209518
 )
 
+x <- df$diameter
+y <- df$height
+z <- new_diameters
 
-... # Insert your code here. 
+#need to use the regression coefficients to make an equation to calculate a new height,
+#for the new diameters, then plot those new points on the original graph
+
+#x coefficient = 0.351376 b1
+#intercept = -0.003803 b0 
+
+height_equation = function(x){
+  height <- (-0.003803) + (0.351376 * x)
+  return(round(height, 3))
+}
+
+new_heights <- c()
+
+for(i in new_diameters){
+  new_heights <- append(new_heights, height_equation(i))
+}
+a <- new_heights
+a
+
+#can plot these new points by using points(z, a, col = 'violet')
+
+plot(x, y, main = 'Height vs Diameter', xlab = 'diameter', ylab = 'height')
+abline(lm(y ~ x), col = "red")
+points(z, a, col = 'violet')
 ```
-
-
-
 
 
 :::{.hidden unless-format="pdf"}
