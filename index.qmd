@@ -4,8 +4,8 @@ author: "[Danny Dawson]{style='background-color: yellow;'}"
 toc: true
 title-block-banner: true
 title-block-style: default
-format: html
-# format: pdf
+#format: html
+format: pdf
 ---
 
 [Link to the Github repository](https://github.com/psu-stat380/hw-2)
@@ -128,6 +128,8 @@ abalone_violinplot
 ```
 
 
+Female and Male abalones have about the same amount of variation in size. The intersex abalones have a little bit less variation, and are smaller than both the male and female abalones on average. 
+
 ---
 
 ###### 1.5  (5 points)
@@ -144,6 +146,8 @@ abalone_scatterplot <-
 
 abalone_scatterplot
 ```
+
+There is a intersex anomaly in the scatterplot, with a green triangle completely displaced from the rest of the abalones. There is a male abalone that is somewhat an anomaly, but it is still pretty close to the trendline of sizes. 
 
 ---
 
@@ -304,6 +308,12 @@ model <- lm(y ~ x)
 summary(model)
 ```
 
+The regression coefficients are as follows. 
+
+b0 = -0.003803
+b1 = 0.351376
+
+The x-value (diameter) has a p-value of 2e-16. At basically any significance level, this will prove to be a statistically significant statistic. Thus, abalone diameter is a statistically significant predictor of abalone height. 
 
 
 ---
@@ -320,7 +330,7 @@ plot(x, y, main = 'Height vs Diameter', xlab = 'diameter', ylab = 'height')
 abline(lm(y ~ x), col = "red")
 ```
 
-
+The linear model is an appropriate model for this data. Most of the data points lie near the line of best fit, and there are really only two outliers in the scatterplot. 
 
 ---
 
@@ -372,9 +382,6 @@ plot(x, y, main = 'Height vs Diameter', xlab = 'diameter', ylab = 'height')
 abline(lm(y ~ x), col = "red")
 points(z, a, col = 'violet')
 ```
-
-
-
 
 
 :::{.hidden unless-format="pdf"}
