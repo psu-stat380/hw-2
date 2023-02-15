@@ -91,11 +91,11 @@ No rows were dropped.
 Plot histograms of all the quantitative variables in a **single plot** [^footnote_facet_wrap]
 
 ```{R}
-quant = df[, 2:9]
-quant %>%
+df %>%
+  pivot_longer(cols = c('length', 'diameter', 'height', 'whole_weight', 'shucked_weight', 'viscera_weight', 'shell_weight', 'rings'), names_to = 'var', values_to = 'val')%>%
   ggplot +
-  for (col in colnames(quant)){geom_histogram(x = col, binwidth = +
-  facet_wrap(colnames(quant))
+  geom_histogram(aes(x = val)) +
+  facet_wrap(facets = 'var')
 ```
 
 
@@ -195,8 +195,11 @@ Implement the following in a **single command**:
 
 
 ```{R}
-df %>%
-  mutate('num_rings' = case_when(rings < 10 ~ 'low', rings > 20 ~ 'high', 10 <= rings | rings <= 20 ~ 'med')) %>%
+num_df <-
+  df %>%
+  mutate('num_rings' = case_when(rings < 10 ~ 'low', rings > 20 ~ 'high', 10 <= rings | rings <= 20 ~ 'med'))
+
+num_df %>%
   group_by(num_rings, sex) %>%
   summarise('avg_weight' = mean(whole_weight + shucked_weight + viscera_weight + shell_weight))%>%
   ggplot +
@@ -212,8 +215,11 @@ df %>%
 Make a table of the pairwise correlations between all the numeric variables rounded to 2 decimal points. Your final answer should look like this [^footnote_table]
 
 
-```R
-df %>% ... # Insert your code here
+```{R}
+R <- df %>%
+keep(is.numeric) %>%
+cor()
+R
 ```
 
 
@@ -230,8 +236,11 @@ Use the `map2()` function from the `purrr` package to create a scatter plot for 
 
 
 ```{R}
-map2(x = num_rings, y = col, color = sex)%>%
-  cowplot::plot_grid()
+df %>%
+  pivot_longer(cols = c('length', 'diameter', 'height', 'whole_weight', 'shucked_weight',   'viscera_weight', 'shell_weight'), names_to = 'var', values_to = 'val')%>%
+  ggplot +
+  geom_point(aes(x = rings, y = val, color = sex)) +
+  facet_grid(facets = 'var')
 ```
 
 
@@ -285,8 +294,6 @@ Suppose we have collected observations for "new" abalones with `new_diameter` va
 
 ```{R}
 df3 <- df %>% select(diameter, height)
-model <- lm(height~diameter, data = df3)
-nd_frame = data.frame(new_diameters)
 new_diameters <- c(
   0.15218946,
   0.48361548,
@@ -300,14 +307,12 @@ new_diameters <- c(
   0.01209518
 ) 
 
-predict_model = predict(model, newdata = nd_frame)
-print(predict_model)
-plot(df$diameter, df$height)
-plot(nd_frame, predict_model)
-df %>%
-  ggplot +
-  geom_point(aes(x = )
-
+nd_frame = data.frame(new_diameters)%>%
+  rename('diameter' = 'new_diameters')
+model <- lm(height ~ diameter, data = df3)
+predict_model <- predict(model, nd_frame)
+plot(nd_frame%>% unlist(), predict_model, col = 'violet')
+points(df3$diameter, df3$height, col = 'grey')
 ```
 
 
