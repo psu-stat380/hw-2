@@ -114,7 +114,7 @@ Plot histograms of all the quantitative variables in a **single plot**
     its documentation using the help console in R
 
 ```{R}
-# selecting all but sex, putting the variables into a column and the values into a column and then plotting
+# using gather to put column names into one column and the values into another
 df %>%
   select(!sex) %>%
   gather(cols, value) %>%
@@ -166,7 +166,8 @@ there any notable anomalies in the dataset?
 ```{R}
 df %>%
   ggplot() + 
-  geom_point(aes(x = length, y = diameter, shape = sex, color = sex, size = shell_weight)) +
+  geom_point(aes(x = length, y = diameter, shape = sex, color = sex, size = 
+             shell_weight)) +
   labs(size = "shell weight")
 ```
 
@@ -219,7 +220,7 @@ variable by `sex`.
 
 ``` {r}
 # creating dataset that contains all the mean values each variable
-# using pivot_longer to put the column names into one column and all the means into another
+# pivot_longer to put the column names into one column and the means into another
 df2 <- df %>%
   filter(length >= 0.5) %>%
   group_by(sex) %>%
@@ -235,7 +236,7 @@ df2 <- df %>%
                  names_to = 'Vars',
                  values_to = 'Means')
 
-# plot the new dataset, facet wrapping by sex and stacking the bar charts vertically
+# plot the new dataset, facet wrapping by sex and stacking bar charts vertically
 df2 %>%
   ggplot() +
   geom_bar(aes(x = Means, y = Vars, fill = sex), stat = 'identity') + 
@@ -267,12 +268,13 @@ Implement the following in a **single command**:
     `avg_weight` value.
 
 ``` {r}
-# adding new temp variable that uses if statements to assign new value based on current column
+# adding temp variable using if statements to assign new val based on cur value
 # summarize the total weight of each abalone
 df %>% 
-  mutate(num_rings = ifelse(rings>20, 'high', ifelse(rings<10, 'low', 'med'))) %>%
+  mutate(num_rings=ifelse(rings>20, 'high', ifelse(rings<10, 'low', 'med'))) %>%
   group_by(num_rings, sex) %>%
-  summarise(avg_weight = mean(whole_weight + shucked_weight + viscera_weight + shell_weight)) %>%
+  summarise(avg_weight = mean(whole_weight + shucked_weight + viscera_weight +
+                              shell_weight)) %>%
   ggplot() + 
   geom_tile(aes(x = num_rings, y = sex, fill = avg_weight)) + 
   xlab("Number of rings") + 
@@ -293,9 +295,10 @@ like this [^3]
 ``` {r}
 # selecting all columns in table except for the sex column
 df2 <- df %>% 
-  select(length, diameter, height, whole_weight, shucked_weight, viscera_weight, shell_weight, rings)
+  select(length, diameter, height, whole_weight, shucked_weight, viscera_weight,
+         shell_weight, rings)
 
-# getting all the correlation values for each pair of quantitative variables & displaying that table
+# getting the correlation values for each pair of quantitative variables
 data.cor <- round(cor(df2),2)
 data.cor
 ```
@@ -323,11 +326,13 @@ dfquant <- df %>%
   select(!sex)
 
 # specifying the 2 datasets that are to be plotted against each other 
-# giving the ggplot/geom_point to indicate that we want rings to be plotted agaisnt all the variable in the other dataset
-plot <- map2(dfquant, dfrings, ~ ggplot(df) + geom_point(aes(x = rings, y=.x, color=sex)) + ylab(' '))
+# using ggplot to indicate we want rings to be plotted against other variables
+plot <- map2(dfquant, dfrings, ~ ggplot(df) + geom_point(aes(x = rings, y=.x, 
+             color=sex)) + ylab(' '))
 
 # using cowplot::plot_grid() to make the grid of plots
-cowplot::plot_grid(plotlist = plot, labels = colnames(dfquant), ncol = 3, vjust = 0.85, hjust = 0, label_size = 8)
+cowplot::plot_grid(plotlist = plot, labels = colnames(dfquant), ncol = 3, 
+                   vjust = 0.85, hjust = 0, label_size = 8)
 ```
 
 <br><br><br><br> <br><br><br><br> ---
@@ -381,7 +386,8 @@ Explain.
 x <- df$diameter
 y <- df$height
 
-plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height')
+plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, 
+     main = 'Abalone ring diameter vs height')
 lines(x, fitted(lm(y ~x)), col = 'red')
 
 ```
@@ -419,7 +425,8 @@ new_x <- data.frame(x = new_diameters)
 new_height <- predict(model, new_x)
 
 
-plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', xlim = c(0,1))
+plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, 
+     main = 'Abalone ring diameter vs height', xlim = c(0,1))
 lines(x, fitted(lm(y~x)), col = 'red')
 points(new_diameters %>% unlist(), new_height, col = 'violet', pch = 19)
 ```
