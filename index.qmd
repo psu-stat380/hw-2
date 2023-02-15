@@ -4,8 +4,8 @@ author: "Brady Miller"
 toc: true
 title-block-banner: true
 title-block-style: default
-format: html
-#format: pdf
+# format: html
+format: pdf
 editor: 
   markdown: 
     wrap: 72
@@ -85,7 +85,6 @@ abalone <- read.csv(url)
 
 # renaming columns in 'abalone' to col names provided
 colnames(abalone) = abalone_col_names
-
 ```
 
 ------------------------------------------------------------------------
@@ -122,7 +121,6 @@ df %>%
   ggplot() +
   geom_histogram(aes(value)) +
   facet_wrap(~ cols, scales = 'free')
-
 ```
 
 ------------------------------------------------------------------------
@@ -319,17 +317,17 @@ grid of plots.
 ``` {r}
 # creating 2 new datasets that will be used for the map2() function
 dfrings <- df %>%
-  select(rings)
+  select(rings) 
 
 dfquant <- df %>%
   select(!sex)
 
 # specifying the 2 datasets that are to be plotted against each other 
 # giving the ggplot/geom_point to indicate that we want rings to be plotted agaisnt all the variable in the other dataset
-plot <- map2(dfquant, dfrings, ~ggplot(df) + geom_point(aes(x = rings, y=.x, color=sex)))
+plot <- map2(dfquant, dfrings, ~ ggplot(df) + geom_point(aes(x = rings, y=.x, color=sex)) + ylab(' '))
 
 # using cowplot::plot_grid() to make the grid of plots
-cowplot::plot_grid(plotlist = plot, labels = colnames(dfquant), ncol = 3)
+cowplot::plot_grid(plotlist = plot, labels = colnames(dfquant), ncol = 3, vjust = 0.85, hjust = 0, label_size = 8)
 ```
 
 <br><br><br><br> <br><br><br><br> ---
@@ -383,8 +381,8 @@ Explain.
 x <- df$diameter
 y <- df$height
 
-plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey')
-lines(x, fitted(lm(y ~x), col = 'red'))
+plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height')
+lines(x, fitted(lm(y ~x)), col = 'red')
 
 ```
 This linear model seems to be an pretty appropriate fit for this relationship.
@@ -421,8 +419,8 @@ new_x <- data.frame(x = new_diameters)
 new_height <- predict(model, new_x)
 
 
-plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', col = 'grey', xlim = c(0,1))
-lines(x, fitted(lm(y~x), color = 'red'))
+plot(x, y, xlab = 'diameter', ylab = 'height', pch=20, main = 'Abalone ring diameter vs height', xlim = c(0,1))
+lines(x, fitted(lm(y~x)), col = 'red')
 points(new_diameters %>% unlist(), new_height, col = 'violet', pch = 19)
 ```
 
