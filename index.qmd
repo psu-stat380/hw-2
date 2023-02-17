@@ -1,34 +1,44 @@
 ---
 title: "Homework 2"
-author: "[Insert your name here]{style='background-color: yellow;'}"
+author: "Huanzhang Xia"
 toc: true
 title-block-banner: true
 title-block-style: default
-format: html
-# format: pdf
+format: pdf
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 [Link to the Github repository](https://github.com/psu-stat380/hw-2)
 
----
+------------------------------------------------------------------------
 
 ::: {.callout-important style="font-size: 0.8em;"}
-## Due: Tue, Feb 14, 2023 @ 11:59pm
+## Due: Tue, Feb 14, 2023 \@ 11:59pm
 
-Please read the instructions carefully before submitting your assignment.
+Please read the instructions carefully before submitting your
+assignment.
 
-1. This assignment requires you to only upload a `PDF` file on Canvas
-1. Don't collapse any code cells before submitting. 
-1. Remember to make sure all your code output is rendered properly before uploading your submission.
+1.  This assignment requires you to only upload a `PDF` file on Canvas
+2.  Don't collapse any code cells before submitting.
+3.  Remember to make sure all your code output is rendered properly
+    before uploading your submission.
 
-⚠️ Please add your name to the author information in the frontmatter before submitting your assignment ⚠️
+⚠️ Please add your name to the author information in the frontmatter
+before submitting your assignment ⚠️
 :::
 
-For this assignment, we will be using the [Abalone dataset](http://archive.ics.uci.edu/ml/datasets/Abalone) from the UCI Machine Learning Repository. The dataset consists of physical measurements of abalone (a type of marine snail) and includes information on the age, sex, and size of the abalone.
+For this assignment, we will be using the [Abalone
+dataset](http://archive.ics.uci.edu/ml/datasets/Abalone) from the UCI
+Machine Learning Repository. The dataset consists of physical
+measurements of abalone (a type of marine snail) and includes
+information on the age, sex, and size of the abalone.
 
 We will be using the following libraries:
 
-```R
+```{R}
+rm(list=ls())
 library(readr)
 library(tidyr)
 library(ggplot2)
@@ -37,22 +47,24 @@ library(purrr)
 library(cowplot)
 ```
 
-
-<br><br><br><br>
----
+## <br><br><br><br>
 
 ## Question 1
-::: {.callout-tip}
+
+::: callout-tip
 ## 30 points
+
 EDA using `readr`, `tidyr` and `ggplot2`
 :::
 
 ###### 1.1 (5 points)
 
-Load the "Abalone" dataset as a tibble called `abalone` using the URL provided below. The `abalone_col_names` variable contains a vector of the column names for this dataset (to be consistent with the R naming pattern). Make sure you read the dataset with the provided column names. 
+Load the "Abalone" dataset as a tibble called `abalone` using the URL
+provided below. The `abalone_col_names` variable contains a vector of
+the column names for this dataset (to be consistent with the R naming
+pattern). Make sure you read the dataset with the provided column names.
 
-```R
-library(readr)
+```{R}
 url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data"
 
 abalone_col_names <- c(
@@ -67,196 +79,251 @@ abalone_col_names <- c(
   "rings"
 )
 
-abalone <- ... # Insert your code here
+abalone <- read.csv(url)
+names(abalone)[1:9] <- abalone_col_names
 ```
 
----
+------------------------------------------------------------------------
 
 ###### 1.2 (5 points)
 
-Remove missing values and `NA`s from the dataset and store the cleaned data in a tibble called `df`. How many rows were dropped?
+Remove missing values and `NA`s from the dataset and store the cleaned
+data in a tibble called `df`. How many rows were dropped?
 
-```R
-df <- ... # Insert your code here
+```{R}
+df <- tibble(abalone)
+drop_na(df)
 ```
 
+No row is dropped.
 
-
-
----
+------------------------------------------------------------------------
 
 ##### 1.3 (5 points)
 
-Plot histograms of all the quantitative variables in a **single plot** [^footnote_facet_wrap]
+Plot histograms of all the quantitative variables in a **single plot**
+[^1]
 
-```R
-... # Insert your code here
+[^1]: You can use the `facet_wrap()` function for this. Have a look at
+    its documentation using the help console in R
+
+```{R}
+df%>%
+  keep(is.numeric) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+    facet_wrap(~ key, scales = "free") +
+    geom_histogram()
 ```
 
-
----
+------------------------------------------------------------------------
 
 ##### 1.4 (5 points)
 
-Create a boxplot of `length` for each `sex` and create a violin-plot of of `diameter` for each `sex`. Are there any notable differences in the physical appearences of abalones based on your analysis here?
+Create a boxplot of `length` for each `sex` and create a violin-plot of
+of `diameter` for each `sex`. Are there any notable differences in the
+physical appearences of abalones based on your analysis here?
 
-```R
-... # Insert your code for boxplot here
+```{R}
+ggplot(df,aes(y=sex,x=length))+geom_boxplot()
 ```
 
-```R
-... # Insert your code for violinplot here
+```{R}
+ggplot(df, aes(x=diameter, y=sex)) + 
+  geom_violin()
 ```
 
+------------------------------------------------------------------------
 
----
+###### 1.5 (5 points)
 
-###### 1.5  (5 points)
+Create a scatter plot of `length` and `diameter`, and modify the shape
+and color of the points based on the `sex` variable. Change the size of
+each point based on the `shell_weight` value for each observation. Are
+there any notable anomalies in the dataset?
 
-Create a scatter plot of `length` and `diameter`, and modify the shape and color of the points based on the `sex` variable. Change the size of each point based on the `shell_wight` value for each observation. Are there any notable anomalies in the dataset?
+Inter sex are smaller in length and diameter. The higher the shell
+weight, the higher the diameter and length.
 
-
-
-```R
-... # Insert your code here
+```{R}
+ggplot(df, aes(x=length, y=diameter,color=sex,shape=sex,size=shell_weight)) + 
+  geom_point()
 ```
 
----
+------------------------------------------------------------------------
 
 ###### 1.6 (5 points)
 
-For each `sex`, create separate scatter plots of `length` and `diameter`. For each plot, also add a **linear** trendline to illustrate the relationship between the variables. Use the `facet_wrap()` function in R for this, and ensure that the plots are vertically stacked **not** horizontally. You should end up with a plot that looks like this: [^footnote_plot_facet]
+For each `sex`, create separate scatter plots of `length` and
+`diameter`. For each plot, also add a **linear** trendline to illustrate
+the relationship between the variables. Use the `facet_wrap()` function
+in R for this, and ensure that the plots are vertically stacked **not**
+horizontally. You should end up with a plot that looks like this: [^2]
 
+[^2]: Plot example for 1.6<br>
+    [![](images/lines.png){style="height: 5em;"}]{.content-visible
+    when-format="html"}
 
-```R
-... # Insert your code here
+```{R}
+ggplot(df,aes(x=length,y=diameter))+geom_point(aes(color=sex))+geom_smooth(method=lm,se=FALSE)+facet_wrap(vars(sex), nrow=3)
 ```
 
-
-
-
-
-<br><br><br><br>
-<br><br><br><br>
----
+<br><br><br><br> <br><br><br><br> ---
 
 ## Question 2
-::: {.callout-tip}
+
+::: callout-tip
 ## 40 points
+
 More advanced analyses using `dplyr`, `purrrr` and `ggplot2`
 :::
 
-
----
+------------------------------------------------------------------------
 
 ###### 2.1 (10 points)
 
-Filter the data to only include abalone with a length of at least $0.5$ meters. Group the data by `sex` and calculate the mean of each variable for each group. Create a bar plot to visualize the mean values for each variable by `sex`.
+Filter the data to only include abalone with a length of at least $0.5$
+meters. Group the data by `sex` and calculate the mean of each variable
+for each group. Create a bar plot to visualize the mean values for each
+variable by `sex`.
 
-
-```R
-df %>% ... # Insert your code here
+```{R}
+dffilter <- df%>% 
+  filter(length>=0.5)%>%
+  group_by(sex)%>%
+  summarise(across(everything(),mean))
+dffilterp <- dffilter%>%pivot_longer(cols=c("length", 
+  "diameter", 
+  "height", 
+  "whole_weight", 
+  "shucked_weight", 
+  "viscera_weight", 
+  "shell_weight", 
+  "rings"),names_to = "variables",values_to = "values")
+ggplot(dffilterp,aes(x=values,y=variables,fill=sex))+geom_col(position=position_dodge())+coord_flip()
 ```
 
-
----
+------------------------------------------------------------------------
 
 ###### 2.2 (15 points)
 
 Implement the following in a **single command**:
 
-1. Temporarily create a new variable called `num_rings` which takes a value of:
+1.  Temporarily create a new variable called `num_rings` which takes a
+    value of:
 
-  * `"low"` if `rings < 10`
-  * `"high"` if `rings > 20`, and
-  * `"med"` otherwise
+-   `"low"` if `rings < 10`
+-   `"high"` if `rings > 20`, and
+-   `"med"` otherwise
 
-2. Group `df` by this new variable and `sex` and compute `avg_weight` as the average of the `whole_weight + shucked_weight + viscera_weight + shell_weight` for each combination of `num_rings` and `sex`. 
+2.  Group `df` by this new variable and `sex` and compute `avg_weight`
+    as the average of the
+    `whole_weight + shucked_weight + viscera_weight + shell_weight` for
+    each combination of `num_rings` and `sex`.
 
-3. Use the `geom_tile()` function to create a tile plot of `num_rings` vs `sex` with the color indicating of each tile indicating the `avg_weight` value. 
+3.  Use the `geom_tile()` function to create a tile plot of `num_rings`
+    vs `sex` with the color indicating of each tile indicating the
+    `avg_weight` value.
 
-
-```R
-df %>% ... # Insert your code here
+```{R}
+df%>%
+  mutate(num_rings=ifelse(rings<10 | rings>20,case_when(rings < 10 ~ 'low',rings > 20 ~ 'high'),'med'))%>%
+  group_by(num_rings,sex)%>%
+  summarize(avg_weight=mean(whole_weight + shucked_weight + viscera_weight + shell_weight))%>%
+  ggplot()+geom_tile(aes(y=num_rings,x=sex,fill=avg_weight))
 ```
 
-
-
----
+------------------------------------------------------------------------
 
 ###### 2.3 (5 points)
 
-Make a table of the pairwise correlations between all the numeric variables rounded to 2 decimal points. Your final answer should look like this [^footnote_table]
+Make a table of the pairwise correlations between all the numeric
+variables rounded to 2 decimal points. Your final answer should look
+like this [^3]
 
+[^3]: Table for 2.3<br>
 
-```R
-df %>% ... # Insert your code here
+```{R}
+table <- df%>%
+  keep(is.numeric)%>%
+  cor()
+round(table, 2)
 ```
 
-
-
----
+------------------------------------------------------------------------
 
 ###### 2.4 (10 points)
 
-Use the `map2()` function from the `purrr` package to create a scatter plot for each _quantitative_ variable against the number of `rings` variable. Color the points based on the `sex` of each abalone. You can use the `cowplot::plot_grid()` function to finally make the following grid of plots.
+Use the `map2()` function from the `purrr` package to create a scatter
+plot for each *quantitative* variable against the number of `rings`
+variable. Color the points based on the `sex` of each abalone. You can
+use the `cowplot::plot_grid()` function to finally make the following
+grid of plots.
 
-:::{.content-visible when-format="html"}
+::: {.content-visible when-format="html"}
 ![](images/plot_grid.png)
 :::
 
-
-```R
-... # Insert your code here
+```{R}
+#df%>%
+ # keep(is.numeric) %>% 
+  #map2()
 ```
 
-
-
-<br><br><br><br>
-<br><br><br><br>
----
+<br><br><br><br> <br><br><br><br> ---
 
 ## Question 3
-::: {.callout-tip}
+
+::: callout-tip
 ## 30 points
 
 Linear regression using `lm`
 :::
 
----
+------------------------------------------------------------------------
 
 ###### 3.1 (10 points)
 
-Perform a simple linear regression with `diameter` as the covariate and `height` as the response. Interpret the model coefficients and their significance values. 
+Perform a simple linear regression with `diameter` as the covariate and
+`height` as the response. Interpret the model coefficients and their
+significance values.
 
+The intercept is -0.003784, meaning that when diameter is 0, the height is -0.003784, which is meaningless. The slope is 0.351346, meaning that per 1 increase in the diameter, we expect an increase of 0.351346 in height. Both terms are significant.
 
-```R
-... # Insert your code here
+```{R}
+model1 <- lm(height~diameter,data=df)
+summary(model1)
 ```
 
 
-
----
+------------------------------------------------------------------------
 
 ###### 3.2 (10 points)
 
-Make a scatterplot of `height` vs `diameter` and plot the regression line in `color="red"`. You can use the base `plot()` function in R for this. Is the linear model an appropriate fit for this relationship? Explain. 
+Make a scatterplot of `height` vs `diameter` and plot the regression
+line in `color="red"`. You can use the base `plot()` function in R for
+this. Is the linear model an appropriate fit for this relationship?
+Explain.
 
+Yes. The data is mostly linear.
 
-```R
-... # Insert your code here
+```{R}
+plot(df$diameter,df$height)
+abline(model1,col="red")
 ```
 
 
 
----
+------------------------------------------------------------------------
 
-###### 3.3  (10 points)
+###### 3.3 (10 points)
 
-Suppose we have collected observations for "new" abalones with `new_diameter` values given below. What is the expected value of their `height` based on your model above? Plot these new observations along with your predictions in your plot from earlier using `color="violet"`
+Suppose we have collected observations for "new" abalones with
+`new_diameter` values given below. What is the expected value of their
+`height` based on your model above? Plot these new observations along
+with your predictions in your plot from earlier using `color="violet"`
 
-```R
-
+``` {r}
 new_diameters <- c(
   0.15218946,
   0.48361548,
@@ -270,22 +337,20 @@ new_diameters <- c(
   0.01209518
 )
 
-
-... # Insert your code here. 
+new_data <- data.frame(new_diameters)
+newdata <- new_data%>%
+  rename(diameter=new_diameters)
+height <- predict(model1,newdata=newdata)
+plot(df$diameter,df$height)
+abline(model1,col="red")
+points(x=new_diameters,y=height,pch=19,col="violet")
 ```
 
-
-
-
-
-:::{.hidden unless-format="pdf"}
+::: {.hidden unless-format="pdf"}
 \pagebreak
 :::
 
-<br><br><br><br>
-<br><br><br><br>
----
-
+<br><br><br><br> <br><br><br><br> ---
 
 # Appendix
 
@@ -299,27 +364,15 @@ sessionInfo()
 ```
 :::
 
-[^footnote_facet_wrap]:
-  You can use the `facet_wrap()` function for this. Have a look at its documentation using the help console in R
-
-[^footnote_plot_facet]:
-  Plot example for 1.6<br>
-  [![](images/lines.png){style="height: 5em;"}]{.content-visible when-format="html"}
-
-[^footnote_table]:
-  Table for 2.3<br>
-
-:::{.content-visible when-format="html"}
-
-| length| diameter| height| whole_weight| shucked_weight| viscera_weight| shell_weight| rings|
-|:--------------|------:|--------:|------:|------------:|--------------:|--------------:|------------:|-----:|
-|length         |   1.00|     0.99|   0.83|         0.93|           0.90|           0.90|         0.90|  0.56|
-|diameter       |   0.99|     1.00|   0.83|         0.93|           0.89|           0.90|         0.91|  0.57|
-|height         |   0.83|     0.83|   1.00|         0.82|           0.77|           0.80|         0.82|  0.56|
-|whole_weight   |   0.93|     0.93|   0.82|         1.00|           0.97|           0.97|         0.96|  0.54|
-|shucked_weight |   0.90|     0.89|   0.77|         0.97|           1.00|           0.93|         0.88|  0.42|
-|viscera_weight |   0.90|     0.90|   0.80|         0.97|           0.93|           1.00|         0.91|  0.50|
-|shell_weight   |   0.90|     0.91|   0.82|         0.96|           0.88|           0.91|         1.00|  0.63|
-|rings          |   0.56|     0.57|   0.56|         0.54|           0.42|           0.50|         0.63|  1.00|
-
+::: {.content-visible when-format="html"}
+| length         | diameter | height | whole_weight | shucked_weight | viscera_weight | shell_weight | rings |      |
+|:-------|-------:|-------:|-------:|-------:|-------:|-------:|-------:|-------:|
+| length         |     1.00 |   0.99 |         0.83 |           0.93 |           0.90 |         0.90 |  0.90 | 0.56 |
+| diameter       |     0.99 |   1.00 |         0.83 |           0.93 |           0.89 |         0.90 |  0.91 | 0.57 |
+| height         |     0.83 |   0.83 |         1.00 |           0.82 |           0.77 |         0.80 |  0.82 | 0.56 |
+| whole_weight   |     0.93 |   0.93 |         0.82 |           1.00 |           0.97 |         0.97 |  0.96 | 0.54 |
+| shucked_weight |     0.90 |   0.89 |         0.77 |           0.97 |           1.00 |         0.93 |  0.88 | 0.42 |
+| viscera_weight |     0.90 |   0.90 |         0.80 |           0.97 |           0.93 |         1.00 |  0.91 | 0.50 |
+| shell_weight   |     0.90 |   0.91 |         0.82 |           0.96 |           0.88 |         0.91 |  1.00 | 0.63 |
+| rings          |     0.56 |   0.57 |         0.56 |           0.54 |           0.42 |         0.50 |  0.63 | 1.00 |
 :::
